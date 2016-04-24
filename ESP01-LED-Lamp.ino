@@ -14,8 +14,8 @@ const char* sensorID2 = "BUT003"; //Name of sensor
 const char* deviceDescription = "Outside light";
 
 // WiFi parameters
-const char* ssid = "TheSubway";
-const char* password = "vanillamoon576";
+const char* ssid = ""; //Enter your WiFi network name here in the quotation marks
+const char* password = ""; //Enter your WiFi pasword here in the quotation marks
 
 //Server details
 unsigned int localPort = 5007;  //UDP send port
