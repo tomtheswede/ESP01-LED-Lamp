@@ -1,6 +1,7 @@
 /*  
  *   For a Desk lamp with an ESP-01 chip.
  *   Most code by Thomas Friberg
+ *   Placeholder change
  */
 
 // Import ESP8266 libraries
