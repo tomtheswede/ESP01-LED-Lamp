@@ -9,8 +9,8 @@
 #include <WiFiUdp.h>
 
 //Sensor details
-const char* sensorID1 = "LED002"; //Name of sensor
-const char* sensorID2 = "BUT002"; //Name of sensor
+const char* sensorID1 = "LED005"; //Name of sensor
+const char* sensorID2 = "BUT005"; //Name of sensor
 const char* deviceDescription = "Study Lamp";
 const int defaultFade = 15;
 const int ledPin = 2; //LED pin number
@@ -36,6 +36,7 @@ int butState = 0;
 int butPushTime = 0; //millisecond timer for when the button is triggered
 int fadeSpeed = defaultFade; //Time between fade intervals - 20ms between change in brightness
 String data = "";
+int timerCount = 0;
 
 WiFiUDP Udp; //Instance to send packets
 
@@ -54,9 +55,9 @@ void loop()
 {
   //Check button state
   CheckButton();
-
+  CheckTimer();
+  
   data=ParseUdpPacket(); //Code for receiving UDP messages
-
   if (data!="") {
     ProcessLedMessage(data);//Conditionals for switching based on LED signal
   }
@@ -186,6 +187,22 @@ void ProcessLedMessage(String dataIn) {
       fadeSpeed=defaultFade;
     }
 
+    //Enables timed commands
+    if (message.startsWith("timer")) { 
+      int messagePos=message.indexOf(" ");
+      //Serial.println("Position of space is " + messagePos);
+      String timerVal=message.substring(5,messagePos);
+      //Serial.println("Fade value is " + fadeVal);
+      timerCount=atoi(timerVal.c_str());
+      //Serial.println("Fade speed set to " + fadeSpeed);
+      message=message.substring(messagePos+1); //Cutting 'timer' from the message
+      Serial.println("Custom timer of " + timerVal + " seconds set");
+      Serial.println("Message trimmed to : " + message);
+    }
+    else {
+      timerCount=0;
+    }
+
     //Enables instant toggling
     if (((message=="instant toggle")||(message=="instant on")||(message=="instant 100")) && (ledPinState==0)) { //Only turn on if already off
       SendUdpValue("LOG",sensorID1,String(100));
@@ -242,6 +259,23 @@ void FadeLEDs() {
     ledPinState = ledPinState - 1;
     analogWrite(ledPin, PWMTable[ledPinState]);
     Serial.println("LED state is now set to " + String(ledPinState));
+    delay(1);
+  }
+}
+
+void CheckTimer() {
+  if(millis() % 1000 == 0) {
+    if(timerCount==0) {
+      //Do nothing
+    }
+    else if (timerCount>1) {
+      timerCount=timerCount-1;
+      Serial.println("Timer value reduced to " + String(timerCount) + "");
+    }
+    else {
+      timerCount=timerCount-1;
+      SendUdpValue("FWD",sensorID1,"off");
+    }
     delay(1);
   }
 }
