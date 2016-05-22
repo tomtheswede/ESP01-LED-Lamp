@@ -1,7 +1,7 @@
 /*  
  *   For a Desk lamp with an ESP-01 chip and a button.
  *   Code by Thomas Friberg (https://github.com/tomtheswede)
- *   Updated 24/04/2016
+ *   Updated 21/05/2016
  */
 
 // Import ESP8266 libraries
@@ -11,8 +11,8 @@
 //Sensor details
 const char* sensorID1 = "LED005"; //Name of sensor
 const char* sensorID2 = "BUT005"; //Name of sensor
-const char* deviceDescription = "Study Lamp";
-const int defaultFade = 15;
+const char* deviceDescription = "Hallway Lamp";
+const int defaultFade = 15; //Miliseconds between fade intervals
 const int ledPin = 2; //LED pin number
 const int butPin = 0; //Button pin
 const int butLoopTime = 100; //millis between loops
@@ -53,7 +53,7 @@ void setup()
 
 void loop()
 {
-  //Check button state
+  //Check button and timer state
   CheckButton();
   CheckTimer();
   
@@ -142,7 +142,7 @@ String ParseUdpPacket() {
   int noBytes = Udp.parsePacket();
   String udpData = "";
   if ( noBytes ) {
-    Serial.print("Packet of ");
+    Serial.print("---Packet of ");
     Serial.print(noBytes);
     Serial.print(" characters received from ");
     Serial.print(Udp.remoteIP());
@@ -169,7 +169,7 @@ void ProcessLedMessage(String dataIn) {
   message=dataIn.substring(7);
   Serial.println("Message reads after processing: " + message);
   
-  if (devID.substring(0,3)=="LED") { //Only do this set of commands if there is a message for an LED device
+  if (devID==sensorID1) { //Only do this set of commands if there is a message for an LED device
     
     //Enables slow fading
     if (message.startsWith("fade")) { 
@@ -197,7 +197,7 @@ void ProcessLedMessage(String dataIn) {
       //Serial.println("Fade speed set to " + fadeSpeed);
       message=message.substring(messagePos+1); //Cutting 'timer' from the message
       Serial.println("Custom timer of " + timerVal + " seconds set");
-      Serial.println("Message trimmed to : " + message);
+      Serial.println("Message trimmed to: " + message);
     }
     else {
       timerCount=0;
@@ -282,7 +282,7 @@ void CheckTimer() {
 
 void SendUdpValue(String type, String sensorID, String value) {
   //Print GPIO state in serial
-  Serial.print("Value sent via UDP: ");
+  Serial.print("-Value sent via UDP: ");
   Serial.println(type + "," + sensorID + "," + value);
 
   // send a message, to the IP address and port
