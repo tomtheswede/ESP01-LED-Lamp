@@ -9,9 +9,9 @@
 #include <WiFiUdp.h>
 
 //Sensor details
-const char* sensorID1 = "LED005"; //Name of sensor
-const char* sensorID2 = "BUT005"; //Name of sensor
-const char* deviceDescription = "Hallway Lamp";
+const char* sensorID1 = "LED006"; //Name of sensor
+const char* sensorID2 = "BUT006"; //Name of sensor
+const char* deviceDescription = "Test";
 const int defaultFade = 15; //Miliseconds between fade intervals
 const int ledPin = 2; //LED pin number
 const int butPin = 0; //Button pin
